@@ -387,7 +387,6 @@ void PortalVisibility::addRoomsFromCone(std::unordered_set<unsigned>& visibleRoo
         if (!isLineInCone(cone, line, isVertical))
             continue;
 
-        //ViewCone newCone = getExtendedConeToLine(cone, line, isVertical);
         ViewConeOrTunnel newCone = getViewConeOrTunnel(cone.Points[0], cone.Points[1], line[0], line[1], false);
 
         visibleRooms.insert(door.otherRoomId);
@@ -431,7 +430,6 @@ std::vector<std::vector<unsigned>> PortalVisibility::getVisibilities()
         }
 
         visibilities[i] = std::vector<unsigned>(visibleRooms.begin(), visibleRooms.end());
-        //std::cerr << i << " / " << rooms.size() << std::endl;
     }
 
     return visibilities;
