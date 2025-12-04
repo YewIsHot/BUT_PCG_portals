@@ -157,7 +157,7 @@ private:
     std::vector<unsigned> visibleTileIds;
     std::vector<std::vector<unsigned>> visibilities;
 
-    std::vector<float> frameTimes;
+    std::vector<float> fpsBuffer;
 
     GLScene(float width, float height, MapGen* map, std::vector<std::vector<unsigned>> visibilities);
     bool init();

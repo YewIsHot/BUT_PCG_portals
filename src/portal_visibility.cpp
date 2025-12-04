@@ -213,12 +213,11 @@ PortalVisibility::ViewConeOrTunnel PortalVisibility::getExtendedConeToLine(ViewC
     for (unsigned i = 0; i < lineDims; i++)
     {
         newCone.Points[i] = old.Points[i];
-
-        //float n = extendVectorToPlane(plane, old.borderPoints[i], old.borderVectors[i], isVertical);
         newCone.Vectors[i] = line[(i + 1) % 2] - old.Points[i];
 
         // TODO kdybych se citil moc fancy
         // pravdepodobne to zase potrebuje alternativni podminku pro ty dva edgecasy :)
+        //float n = extendVectorToPlane(plane, old.borderPoints[i], old.borderVectors[i], isVertical);
 
         //if ((std::powf(-1, i)) * n > std::powf(-1, i) * lineVals[(i + 1) % 2]) // is entire line in the cone?
         //{
@@ -434,4 +433,3 @@ std::vector<std::vector<unsigned>> PortalVisibility::getVisibilities()
 
     return visibilities;
 }
-;

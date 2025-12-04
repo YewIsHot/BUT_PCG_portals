@@ -26,27 +26,27 @@ GLScene::GLScene(float width, float height, MapGen* map, std::vector<std::vector
 
 void GLScene::printFrameStatistics()
 {
-    if (frameTimes.size() == 0)
+    if (fpsBuffer.size() == 0)
         return;
 
-    frameTimes.erase(frameTimes.begin());
-    std::sort(frameTimes.begin(), frameTimes.end(), greater<float>());
+    fpsBuffer.erase(fpsBuffer.begin());
+    std::sort(fpsBuffer.begin(), fpsBuffer.end());
 
-    std::cout << "Median FPS: " << 1 / frameTimes[frameTimes.size() / 2] << std::endl;
+    std::cout << "Median FPS: " << fpsBuffer[fpsBuffer.size() / 2] << std::endl;
 
     float avg = 0;
     float percent99 = 0;
-    for (unsigned i = 0; i < frameTimes.size(); i++)
+    for (unsigned i = 0; i < fpsBuffer.size(); i++)
     {
-        avg += frameTimes[i];
+        avg += fpsBuffer[i];
 
-        if (i == frameTimes.size() / 99)
+        if (i == fpsBuffer.size() / 99)
         {
-            percent99 = 1 / (avg / i);
+            percent99 = avg / i;
         }
     }
 
-    std::cout << "Average FPS: " << 1 / (avg / frameTimes.size()) << std::endl;
+    std::cout << "Average FPS: " << avg / fpsBuffer.size() << std::endl;
     std::cout << "99% FPS: " << percent99 << std::endl;
 
 
@@ -403,6 +403,7 @@ bool GLScene::run()
     auto window = SDL_CreateWindow("PGR", windowWidth, windowHeight, SDL_WINDOW_OPENGL);
     auto context = SDL_GL_CreateContext(window);
     ge::gl::init();
+    
 
     //create shaders
     auto vs = std::make_shared<Shader>(GL_VERTEX_SHADER, vsSrc.c_str());
@@ -436,6 +437,8 @@ bool GLScene::run()
     const std::vector<std::vector<unsigned>*> modelsTileOffsets = { &doorTileOffsets, &wallTileOffsets, &floorTileOffsets };
 
     auto startTime = SDL_GetPerformanceCounter();
+    auto fpsDisplayStartTime = startTime;
+
 
     while (true)
     {
@@ -444,8 +447,17 @@ bool GLScene::run()
 
         auto stopTime = SDL_GetPerformanceCounter();
         float timeDiff = (stopTime - startTime) / (float)SDL_GetPerformanceFrequency();
-        frameTimes.push_back(timeDiff);
         startTime = stopTime;
+
+        float fps = (1 / timeDiff);
+        fpsBuffer.push_back(fps);
+
+        if ((stopTime - fpsDisplayStartTime) / (float)SDL_GetPerformanceFrequency() > .25f)
+        {
+            string windowName = "PGR (FPS: " + std::to_string(fps) + ")";
+            SDL_SetWindowTitle(window, windowName.c_str());
+            fpsDisplayStartTime = stopTime;
+        }
 
         updateCameraFpv(fpvPrg, timeDiff);
 
